@@ -29,7 +29,6 @@ Sandbox API Repository to describe, develop, document, and test the eSimRemoteMa
 
 The repository has no (pre)releases yet, work in progress is within the main branch.
 
-_The above section is automatically synchronized by CAMARA project-administration._
 <!-- CAMARA:RELEASE-INFO:END -->
 
 ## Contributing
