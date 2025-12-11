@@ -1,3 +1,4 @@
 | Org                    | Name                                      | GitHub Username        |
 | -----------------------| ------------------------------------------| -----------------------|
-| §company§ | §name§ | §github_username§ |
+| China Unicom | Sun Sentian | SentianSun |
+| China Unicom | Xiao Dongrui | ChinaUnicomXiaoDongrui |

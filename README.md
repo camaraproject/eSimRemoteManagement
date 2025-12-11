@@ -17,7 +17,7 @@ Sandbox API Repository to describe, develop, document, and test the eSimRemoteMa
 
 * Service API(s) “eSimRemoteManagement” (see APIBacklog.md) 
 * The API(s) provide(s) the API consumer with the ability to:  
-  * §Short API scope description§ !! Add here a scope description according to the API proposal
+  * Provide eSIM-based remote management capability, allowing users to remotely manage the status of profiles on the device's eUICC and complete remote operations such as downloading, activating, de-activating or deleting.
 * Describe, develop, document, and test the API(s)
 * Started: December 2025
 <!-- * Incubating stage since: {{incubation date}} --> 
