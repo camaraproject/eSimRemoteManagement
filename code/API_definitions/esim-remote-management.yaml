@@ -1,0 +1,854 @@
+---
+openapi: 3.0.3
+info:
+  title: eSIM Remote Management
+  description: >
+    Provide eSIM-based remote management capability, allowing users to remotely manage the status of profiles on the device's eUICC and complete remote operations such as downloading, activating, de-activating or deleting.
+
+    # Introduction
+
+    The eIM Platform API provides a comprehensive, secure, and standardized interface for device manufacturers (OEMs) and ecosystem partners to remotely manage eSIM profiles on connected devices. This API empowers you to offer seamless connectivity lifecycle management directly within your device ecosystem.
+
+    # API Functionality
+
+    The API provides the following functionality:
+      - Profile Download & Installation: Securely provision and download new eSIM profiles to devices, based on user subscription, geographic location, or specific business triggers.
+      - Profile Inventory Query: Retrieve a detailed list of all eSIM profiles currently stored on a device, including their status (e.g., enabled, disabled, pending download), associated ICCID/EID, and service provider information.
+      - Profile Lifecycle Management: Execute precise control over installed profiles:
+        - Activation/Enable: Switch a downloaded profile to the active state for live connectivity.
+        - Deactivation/Disable: Temporarily disable a profile without deleting it from the device.
+        - Deletion: Permanently remove an unused or obsolete profile from the device's eSIM chip, freeing up memory.
+
+    # Authorization and authentication
+
+    The "Camara Security and Interoperability Profile" provides details of how an API consumer requests an access token. Please refer to Identity and Consent Management (https://github.com/camaraproject/IdentityAndConsentManagement/ ) for the released version of the profile.
+
+    The specific authorization flows to be used will be agreed upon during the onboarding process, happening between the API consumer and the API provider, taking into account the declared purpose for accessing the API, whilst also being subject to the prevailing legal framework dictated by local legislation.
+
+    In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
+
+    # Additional CAMARA error responses
+
+    The list of error codes in this API specification is not exhaustive. Therefore the API specification may not document some non-mandatory error statuses as indicated in `CAMARA API Design Guide`.
+
+    Please refer to the `CAMARA_common.yaml` of the Commonalities Release associated to this API version for a complete list of error responses. The applicable Commonalities Release can be identified in the `API Readiness Checklist` document associated to this API version.
+
+    As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
+  version: wip
+  x-camara-commonalities: 0.6
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Project documentation at CAMARA
+  url: https://github.com/camaraproject/eSimRemoteManagement
+servers:
+  - url: "{apiRoot}/eSimRemoteManagement/vwip"
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root
+tags:
+  - name: eSIMRemoteManagement
+    description: API operation to eSIM Remote Management
+paths:
+  /profile/list-syn:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:listSyn
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileListSyn
+      summary: Profile List Synchronization
+      description: Synchronize Profile list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                protocol:
+                  type: string
+                  description: Protocol type
+                sink:
+                  type: string
+                  description: Callback address (sink address for notification reception)
+                types:
+                  type: array
+                  items:
+                    type: string
+                  description: List of subscribed event types
+                config:
+                  type: object
+                  properties:
+                    subscriptionDetail:
+                      type: object
+                      properties:
+                        eId:
+                          type: string
+                          description: Device EID
+                    initialEvent:
+                      type: boolean
+                      description: Whether to send initial event
+                    subscriptionMaxEvents:
+                      type: integer
+                      description: Maximum subscription events
+                    subscriptionExpireTime:
+                      type: string
+                      description: Subscription expiration time
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    description: Response code
+                  message:
+                    type: string
+                    description: Response message
+                  config:
+                    type: object
+                    properties:
+                      subscriptionDetail:
+                        type: object
+                        properties:
+                          eId:
+                            type: string
+                            description: Device EID
+                      initialEvent:
+                        type: boolean
+                        description: Whether to send initial event
+                      subscriptionMaxEvents:
+                        type: integer
+                        description: Maximum subscription events
+                      subscriptionExpireTime:
+                        type: string
+                        description: Subscription expiration time
+  /profile/status/enquiry:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:enquiry
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileStatusEnquiry
+      summary: Profile Status Enquiry
+      description: Query Profile status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  description: Request timestamp
+                sequenceNum:
+                  type: string
+                  description: Sequence number
+                clientId:
+                  type: string
+                  description: Client ID
+                data:
+                  type: object
+                  properties:
+                    iccid:
+                      type: string
+                      description: ICCID
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    description: Response code
+                  message:
+                    type: string
+                    description: Response message
+                  data:
+                    type: object
+                    properties:
+                      eId:
+                        type: string
+                        description: EID
+                      isUsed:
+                        type: integer
+                        description: Profile usage status 0 Not used, 1 Used
+                        default: 0
+                      maxUsedCount:
+                        type: integer
+                        description: Maximum download count for Profile
+                        default: 1
+                      usedCount:
+                        type: integer
+                        description: Usage count of Profile
+                        default: 0
+                      modifyTime:
+                        type: string
+                        description: Modification time
+  /profile/set/fallback/attribute:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:attribute
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileSetFallbackAttribute
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: string
+                  description: Request timestamp
+                sequenceNum:
+                  type: string
+                  description: Sequence number
+                clientId:
+                  type: string
+                  description: Client ID
+                data:
+                  type: object
+                  properties:
+                    eId:
+                      type: string
+                      description: EID
+                    imei:
+                      type: string
+                      description: Device ID
+                    iccid:
+                      type: string
+                      description: ICCID to operate on
+      responses:
+        '200':
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    description: Response code
+                  message:
+                    type: string
+                    description: Response message
+                  data:
+                    type: object
+                    properties:
+                      taskId:
+                        type: string
+                        description: Task ID
+  /profile/result/query:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:query
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileResultQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqProfileResultQueryReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespProfileResultQueryResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /profile/oper:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:oper
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileOperation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqProfileOperReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespProfileOperResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /profile/downloaded-list:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:downloadedlist
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqEIdProfileListReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespEIdProfileListResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /profile/download:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:download
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileDownload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqProfileDownloadReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespProfileDownloadResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /eid-status-enquiry:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:enquiry
+      tags:
+        - eSIMRemoteManagement
+      operationId: eIdStatusEnquiry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqEIdStatusEnquiryReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespEIdStatusEnquiryResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+components:
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      description: to support Consent Management
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  parameters:
+    x-correlator:
+      name: x-correlator
+      in: header
+      description: Correlation id for the different services
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{1,55}$
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{1,55}$
+  schemas:
+    BaseCmpReqProfileResultQueryReq:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        sequenceNum:
+          type: string
+        clientId:
+          type: string
+          description: Client ID
+        data:
+          $ref: '#/components/schemas/ProfileResultQueryReq'
+    ProfileResultQueryReq:
+      type: object
+      properties:
+        taskId:
+          type: string
+    BaseCmpRespProfileResultQueryResp:
+      type: object
+      properties:
+        resultCode:
+          type: string
+          description: 'B100000 - success  other - fail'
+        resultDesc:
+          type: string
+        sequenceNum:
+          type: string
+        data:
+          $ref: '#/components/schemas/ProfileResultQueryResp'
+    ProfileResultQueryResp:
+      type: object
+      properties:
+        taskId:
+          type: string
+        imei:
+          type: string
+        iccid:
+          type: string
+        operResult:
+          type: integer
+          description: 'Operation profile result:
+            - 0: executing.
+            - 1: Operation success.
+            - 2: Operation fail.'
+          enum: [0, 1, 2]
+        eId:
+          type: string
+        resultMsg:
+          type: string
+          description: Result message
+    BaseCmpReqProfileOperReq:
+      type: object
+      properties:
+        protocol:
+          type: string
+          description: Protocol type
+        sink:
+          type: string
+          description: Callback address (sink address for notification reception)
+        types:
+          type: array
+          items:
+            type: string
+          description: List of subscribed event types
+        config:
+          $ref: '#/components/schemas/ProfileOperReq'
+    ProfileOperReq:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            optType:
+              type: integer
+              description: Operation type 1 Enable, 2 Disable, 3 Delete
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpRespProfileOperResp:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Response code
+        message:
+          type: string
+          description: Response message
+        config:
+          $ref: '#/components/schemas/ProfileOperResp'
+    ProfileOperResp:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            optType:
+              type: integer
+              description: Operation type 1 Enable, 2 Disable, 3 Delete
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpReqEIdProfileListReq:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        sequenceNum:
+          type: string
+        clientId:
+          type: string
+          description: Client ID
+        data:
+          $ref: '#/components/schemas/EIdProfileListReq'
+    EIdProfileListReq:
+      type: object
+      properties:
+        eId:
+          type: string
+    BaseCmpRespEIdProfileListResp:
+      type: object
+      properties:
+        resultCode:
+          type: string
+          description: 'B100000 - success  other - fail'
+        resultDesc:
+          type: string
+        sequenceNum:
+          type: string
+        data:
+          $ref: '#/components/schemas/EIdProfileListResp'
+    EIdProfileListResp:
+      type: object
+      properties:
+        imei:
+          type: string
+        profiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileInfo'
+        eId:
+          type: string
+    ProfileInfo:
+      type: object
+      properties:
+        iccid:
+          type: string
+        enableStatus:
+          type: integer
+          format: int32
+    BaseCmpReqProfileDownloadReq:
+      type: object
+      properties:
+        protocol:
+          type: string
+          description: Protocol type
+        sink:
+          type: string
+          description: Callback address (sink address for notification reception)
+        types:
+          type: array
+          items:
+            type: string
+          description: List of subscribed event types
+        config:
+          $ref: '#/components/schemas/ProfileDownloadReq'
+    ProfileDownloadReq:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            autoEnableType:
+              type: integer
+              description: Download and activate option 1 Download and enable
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpRespProfileDownloadResp:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Response code
+        message:
+          type: string
+          description: Response message
+        config:
+          $ref: '#/components/schemas/ProfileDownloadResp'
+    ProfileDownloadResp:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            autoEnableType:
+              type: integer
+              description: Download and activate option 1 Download and enable
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpReqEIdStatusEnquiryReq:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        sequenceNum:
+          type: string
+        clientId:
+          type: string
+        data:
+          $ref: '#/components/schemas/EIdStatusEnquiryReq'
+    EIdStatusEnquiryReq:
+      type: object
+      properties:
+        eId:
+          type: string
+    BaseCmpRespEIdStatusEnquiryResp:
+      type: object
+      properties:
+        resultCode:
+          type: string
+          description: 'B100000 - success  other - fail'
+        resultDesc:
+          type: string
+        sequenceNum:
+          type: string
+        data:
+          $ref: '#/components/schemas/EIdStatusEnquiryResp'
+    EIdStatusEnquiryResp:
+      type: object
+      properties:
+        enableIccid:
+          type: string
+        imei:
+          type: string
+        syncTime:
+          type: string
+        eId:
+          type: string
+    ErrorInfo:
+      type: object
+      required:
+        - status
+        - code
+        - detail
+      properties:
+        status:
+          type: integer
+          description: HTTP response status code
+        code:
+          type: string
+          description: Code given to this error
+        detail:
+          type: string
+          description: Detailed error description
+  responses:
+    Generic400:
+      description: Problem with the client request
+      headers:
+        x-correlator:
+          description: Correlation id for the different services
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 400
+            code: INVALID_ARGUMENT
+            detail: Client specified an invalid argument, request body or query param
+    Generic401:
+      description: Authentication problem with the client request
+      headers:
+        x-correlator:
+          description: Correlation id for the different services
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 401
+            code: UNAUTHENTICATED
+            detail: Request not authenticated due to missing, invalid, or expired credentials
+    Generic403:
+      description: Client does not have sufficient permission
+      headers:
+        x-correlator:
+          description: Correlation id for the different services
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          examples:
+            PermissionDenied:
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                detail: Client does not have sufficient permissions to perform this action
+            InvalidTokenContext:
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                detail: Phone number cannot be deducted from access token context
+    Generic404:
+      description: Resource Not Found
+      headers:
+        x-correlator:
+          description: Correlation id for the different services
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 404
+            code: NOT_FOUND
+            detail: A specified resource is not found
+    Generic500:
+      description: Server error
+      headers:
+        x-correlator:
+          description: Correlation id for the different services
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 500
+            code: INTERNAL
+            detail: Server error
+    Generic503:
+      description: Service unavailable. Typically the server is down.
+      headers:
+        x-correlator:
+          description: Correlation id for the different services
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorInfo'
+          example:
+            status: 503
+            code: UNAVAILABLE
+            detail: Service unavailable
