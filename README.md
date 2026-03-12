@@ -33,11 +33,10 @@ The repository has no (pre)releases yet, work in progress is within the main bra
 
 ## Contributing
 
-* Meetings are held virtually <!-- for new, independent Sandbox API repositories request a meeting link from the LF admin team or replace the information with the existing meeting information of the Sub Project -->
-
-  * Schedule: !! tbd
-  * [Registration / Join](https://zoom-lfx.platform.linuxfoundation.org/meetings/telcoapi) !! Update this link with your meeting registration/join link and delete the task
-  * Minutes: Access [meeting minutes](https://lf-camaraproject.atlassian.net/wiki/x/RACaFg)
+* Meetings are held virtually 
+    * Schedule: Weekly on Thursday 16:00 CST / 10:00 CEST
+    * [Registration / Join](https://zoom-lfx.platform.linuxfoundation.org/meeting/96461951353?password=150ba7bb-550f-40f6-b8b2-82e67d36ac4e)
+    * Minutes: Access [Meeting minutes](https://wiki.camaraproject.org/display/CAM/eSIMRemoteManagement)
 * Mailing List
-  * Subscribe / Unsubscribe to the mailing list <https://lists.camaraproject.org/g/sp-esim-remote-management>.
-  * A message to the community of this Sub Project can be sent using <sp-esim-remote-management@lists.camaraproject.org>.
+    * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-eSim-remote-management>.
+    * A message to the community of this Sub Project can be sent using <sp-eSim-remote-management@lists.camaraproject.org>.
