@@ -1,0 +1,953 @@
+openapi: 3.0.3
+info:
+  title: eSIM Remote Management
+  description: >
+    Provide eSIM-based remote management capability, allowing users to remotely manage the status of profiles on the device's eUICC and complete remote operations such as downloading, activating, de-activating or deleting.
+
+    # Introduction
+
+    The eIM Platform API provides a comprehensive, secure, and standardized interface for device manufacturers (OEMs) and ecosystem partners to remotely manage eSIM profiles on connected devices. This API empowers you to offer seamless connectivity lifecycle management directly within your device ecosystem.
+
+    # API Functionality
+
+    The API provides the following functionality:
+      - Profile Download & Installation: Securely provision and download new eSIM profiles to devices, based on user subscription, geographic location, or specific business triggers.
+      - Profile Inventory Query: Retrieve a detailed list of all eSIM profiles currently stored on a device, including their status (e.g., enabled, disabled, pending download), associated ICCID/EID, and service provider information.
+      - Profile Lifecycle Management: Execute precise control over installed profiles:
+        - Activation/Enable: Switch a downloaded profile to the active state for live connectivity.
+        - Deactivation/Disable: Temporarily disable a profile without deleting it from the device.
+        - Deletion: Permanently remove an unused or obsolete profile from the device's eSIM chip, freeing up memory.
+
+    # Authorization and authentication
+
+    The "Camara Security and Interoperability Profile" provides details of how an API consumer requests an access token. Please refer to Identity and Consent Management (https://github.com/camaraproject/IdentityAndConsentManagement/ ) for the released version of the profile.
+
+    The specific authorization flows to be used will be agreed upon during the onboarding process, happening between the API consumer and the API provider, taking into account the declared purpose for accessing the API, whilst also being subject to the prevailing legal framework dictated by local legislation.
+
+    In cases where personal data is processed by the API and users can exercise their rights through mechanisms such as opt-in and/or opt-out, the use of three-legged access tokens is mandatory. This ensures that the API remains in compliance with privacy regulations, upholding the principles of transparency and user-centric privacy-by-design.
+
+    # Additional CAMARA error responses
+
+    The list of error codes in this API specification is not exhaustive. Therefore the API specification may not document some non-mandatory error statuses as indicated in `CAMARA API Design Guide`.
+
+    Please refer to the `CAMARA_common.yaml` of the Commonalities Release associated to this API version for a complete list of error responses. The applicable Commonalities Release can be identified in the `API Readiness Checklist` document associated to this API version.
+
+    As a specific rule, error `501 - NOT_IMPLEMENTED` can be only a possible error response if it is explicitly documented in the API.
+  version: wip
+  x-camara-commonalities: 0.8.0-rc.2
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Project documentation at CAMARA
+  url: https://github.com/camaraproject/eSimRemoteManagement
+servers:
+  - url: "{apiRoot}/esim-remote-management/vwip"
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root
+tags:
+  - name: eSIMRemoteManagement
+    description: API operation to eSIM Remote Management
+paths:
+  /profile/result/query:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:query
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileResultQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqProfileResultQueryReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespProfileResultQueryResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /profile/oper:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:oper
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileOperation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqProfileOperReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespProfileOperResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /profile/downloaded-list:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:downloadedlist
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqEIdProfileListReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespEIdProfileListResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+  /profile/download:
+    post:
+      security:
+        - openId:
+            - esim-remote-management:download
+      tags:
+        - eSIMRemoteManagement
+      operationId: profileDownload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseCmpReqProfileDownloadReq'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseCmpRespProfileDownloadResp'
+        '400':
+          $ref: '#/components/responses/Generic400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/Generic404'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+components:
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      description: to support Consent Management
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  parameters:
+    x-correlator:
+      name: x-correlator
+      in: header
+      description: Correlation id for the different services
+      schema:
+        $ref: '#/components/schemas/XCorrelator'
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        $ref: '#/components/schemas/XCorrelator'
+  schemas:
+    BaseCmpReqProfileResultQueryReq:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        sequenceNum:
+          type: string
+        clientId:
+          type: string
+          description: Client ID
+        data:
+          $ref: '#/components/schemas/ProfileResultQueryReq'
+    ProfileResultQueryReq:
+      type: object
+      properties:
+        taskId:
+          type: string
+    BaseCmpRespProfileResultQueryResp:
+      type: object
+      properties:
+        resultCode:
+          type: string
+          description: 'B100000 - success  other - fail'
+        resultDesc:
+          type: string
+        sequenceNum:
+          type: string
+        data:
+          $ref: '#/components/schemas/ProfileResultQueryResp'
+    ProfileResultQueryResp:
+      type: object
+      properties:
+        taskId:
+          type: string
+        imei:
+          type: string
+        iccid:
+          type: string
+        operResult:
+          type: integer
+          format: int32
+          description: 'Operation profile result:
+            - 0: executing.
+            - 1: Operation success.
+            - 2: Operation fail.'
+          enum: [0, 1, 2]
+        eId:
+          type: string
+        resultMsg:
+          type: string
+          description: Result message
+    BaseCmpReqProfileOperReq:
+      type: object
+      properties:
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        sink:
+          type: string
+          description: Callback address (sink address for notification reception)
+        types:
+          type: array
+          items:
+            type: string
+          description: List of subscribed event types
+        config:
+          $ref: '#/components/schemas/ProfileOperReq'
+    ProfileOperReq:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            optType:
+              type: integer
+              format: int32
+              description: Operation type 1 Enable, 2 Disable, 3 Delete
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          format: int32
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpRespProfileOperResp:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Response code
+        message:
+          type: string
+          description: Response message
+        config:
+          $ref: '#/components/schemas/ProfileOperResp'
+    ProfileOperResp:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            optType:
+              type: integer
+              format: int32
+              description: Operation type 1 Enable, 2 Disable, 3 Delete
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          format: int32
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpReqEIdProfileListReq:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        sequenceNum:
+          type: string
+        clientId:
+          type: string
+          description: Client ID
+        data:
+          $ref: '#/components/schemas/EIdProfileListReq'
+    EIdProfileListReq:
+      type: object
+      properties:
+        eId:
+          type: string
+    BaseCmpRespEIdProfileListResp:
+      type: object
+      properties:
+        resultCode:
+          type: string
+          description: 'B100000 - success  other - fail'
+        resultDesc:
+          type: string
+        sequenceNum:
+          type: string
+        data:
+          $ref: '#/components/schemas/EIdProfileListResp'
+    EIdProfileListResp:
+      type: object
+      properties:
+        imei:
+          type: string
+        profiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileInfo'
+        eId:
+          type: string
+    ProfileInfo:
+      type: object
+      properties:
+        iccid:
+          type: string
+        enableStatus:
+          type: integer
+          format: int32
+    BaseCmpReqProfileDownloadReq:
+      type: object
+      properties:
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        sink:
+          type: string
+          description: Callback address (sink address for notification reception)
+        types:
+          type: array
+          items:
+            type: string
+          description: List of subscribed event types
+        config:
+          $ref: '#/components/schemas/ProfileDownloadReq'
+    ProfileDownloadReq:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            autoEnableType:
+              type: integer
+              format: int32
+              description: Download and activate option 1 Download and enable
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          format: int32
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    BaseCmpRespProfileDownloadResp:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Response code
+        message:
+          type: string
+          description: Response message
+        config:
+          $ref: '#/components/schemas/ProfileDownloadResp'
+    ProfileDownloadResp:
+      type: object
+      properties:
+        subscriptionDetail:
+          type: object
+          properties:
+            eId:
+              type: string
+              description: Device EID
+            imei:
+              type: string
+              description: Device IMEI number
+            iccid:
+              type: string
+              description: Card ICCID number
+            autoEnableType:
+              type: integer
+              format: int32
+              description: Download and activate option 1 Download and enable
+        initialEvent:
+          type: boolean
+          description: Whether to send initial event
+        subscriptionMaxEvents:
+          type: integer
+          format: int32
+          description: Maximum subscription events
+        subscriptionExpireTime:
+          type: string
+          description: Subscription expiration time
+    XCorrelator:
+      type: string
+      description: Correlator string, UUID format recommended but any string matching the pattern can be used
+      pattern: '^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$'
+      maxLength: 256
+      example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
+    Protocol:
+      type: string
+      enum:
+        - HTTP
+      description: Identifier of a delivery protocol. Only HTTP is allowed for now
+      example: "HTTP"
+    ErrorInfo:
+      type: object
+      description: A structured error response providing details about a failed request, including the HTTP status code, an error code, and a human-readable message
+      required:
+        - status
+        - code
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
+          description: HTTP response status code
+        code:
+          type: string
+          maxLength: 96
+          description: A human-readable code to describe the error
+        message:
+          type: string
+          maxLength: 512
+          description: A human-readable description of what the event represents
+  responses:
+    Generic400:
+      description: Bad Request
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 400
+                  code:
+                    enum:
+                      - INVALID_ARGUMENT
+                      - OUT_OF_RANGE
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument. Generic Syntax Exception
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: Client specified an invalid argument, request body or query param.
+            GENERIC_400_OUT_OF_RANGE:
+              description: Out of Range. Specific Syntax Exception used when a given field has a pre-defined range or a invalid filter criteria combination is requested
+              value:
+                status: 400
+                code: OUT_OF_RANGE
+                message: Client specified an invalid range.
+    Generic401:
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated and a new authentication is required
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials. A new authentication is required.
+    Generic403:
+      description: Forbidden
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 403
+                  code:
+                    enum:
+                      - PERMISSION_DENIED
+                      - INVALID_TOKEN_CONTEXT
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: Client does not have sufficient permissions to perform this action.
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: Request body is not consistent with access token.
+    Generic404:
+      description: Not found
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+            GENERIC_404_IDENTIFIER_NOT_FOUND:
+              description: Some identifier cannot be matched to a device
+              value:
+                status: 404
+                code: IDENTIFIER_NOT_FOUND
+                message: Device identifier not found.
+    Generic500:
+      description: Internal Server Error
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 500
+                  code:
+                    enum:
+                      - INTERNAL
+          examples:
+            GENERIC_500_INTERNAL:
+              description: Problem in Server side. Regular Server Exception
+              value:
+                status: 500
+                code: INTERNAL
+                message: Unknown server error. Typically a server bug.
+    Generic405:
+      description: Method Not Allowed
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 405
+                  code:
+                    enum:
+                      - METHOD_NOT_ALLOWED
+          examples:
+            GENERIC_405_METHOD_NOT_ALLOWED:
+              description: Invalid HTTP verb used with a given endpoint
+              value:
+                status: 405
+                code: METHOD_NOT_ALLOWED
+                message: The requested method is not allowed/supported on the target resource.
+    Generic406:
+      description: Not Acceptable
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 406
+                  code:
+                    enum:
+                      - NOT_ACCEPTABLE
+          examples:
+            GENERIC_406_NOT_ACCEPTABLE:
+              description: API Server does not accept the media type (`Accept-*` header) indicated by API client
+              value:
+                status: 406
+                code: NOT_ACCEPTABLE
+                message: The server cannot produce a response matching the content requested by the client through `Accept-*` headers.
+    Generic409:
+      description: Conflict
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 409
+                  code:
+                    enum:
+                      - ABORTED
+                      - ALREADY_EXISTS
+                      - CONFLICT
+                      - INCOMPATIBLE_STATE
+          examples:
+            GENERIC_409_ABORTED:
+              description: The resource is undergoing modification by another process
+              value:
+                status: 409
+                code: ABORTED
+                message: Resource is being modified by another operation. Please wait, and retry if appropriate.
+            GENERIC_409_ALREADY_EXISTS:
+              description: Trying to create an existing resource
+              value:
+                status: 409
+                code: ALREADY_EXISTS
+                message: The resource that a client tried to create already exists.
+            GENERIC_409_CONFLICT:
+              description: Duplication of an existing resource
+              value:
+                status: 409
+                code: CONFLICT
+                message: A specified resource duplicate entry found.
+            GENERIC_409_INCOMPATIBLE_STATE:
+              description: The status of the referenced resource is not compatible.
+              value:
+                status: 409
+                code: INCOMPATIBLE_STATE
+                message: Resource must be in AVAILABLE state to extend. Current state is UNAVAILABLE.
+    Generic410:
+      description: Gone
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 410
+                  code:
+                    enum:
+                      - GONE
+          examples:
+            GENERIC_410_GONE:
+              description: Use in notifications flow to allow API Consumer to indicate that its callback is no longer available
+              value:
+                status: 410
+                code: GONE
+                message: Access to the target resource is no longer available.
+    Generic412:
+      description: Failed precondition
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 412
+                  code:
+                    enum:
+                      - FAILED_PRECONDITION
+          examples:
+            GENERIC_412_FAILED_PRECONDITION:
+              description: Indication by the API Server that the request cannot be processed in current system state
+              value:
+                status: 412
+                code: FAILED_PRECONDITION
+                message: Request cannot be executed in the current system state.
+    Generic415:
+      description: Unsupported Media Type
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 415
+                  code:
+                    enum:
+                      - UNSUPPORTED_MEDIA_TYPE
+          examples:
+            GENERIC_415_UNSUPPORTED_MEDIA_TYPE:
+              description: Payload format of the request is in an unsupported format by the Server. Should not happen
+              value:
+                status: 415
+                code: UNSUPPORTED_MEDIA_TYPE
+                message: The server refuses to accept the request because the payload format is in an unsupported format.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
+          examples:
+            GENERIC_422_SERVICE_NOT_APPLICABLE:
+              description: Service not applicable for the provided identifier
+              value:
+                status: 422
+                code: SERVICE_NOT_APPLICABLE
+                message: The service is not available for the provided identifier.
+            GENERIC_422_MISSING_IDENTIFIER:
+              description: An identifier is not included in the request and the device or phone number identification cannot be derived from the 3-legged access token
+              value:
+                status: 422
+                code: MISSING_IDENTIFIER
+                message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: An explicit identifier is provided when a device or phone number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
+    Generic429:
+      description: Too Many Requests
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 429
+                  code:
+                    enum:
+                      - QUOTA_EXCEEDED
+                      - TOO_MANY_REQUESTS
+          examples:
+            GENERIC_429_QUOTA_EXCEEDED:
+              description: Request is rejected due to exceeding a business quota limit
+              value:
+                status: 429
+                code: QUOTA_EXCEEDED
+                message: Out of resource quota.
+            GENERIC_429_TOO_MANY_REQUESTS:
+              description: Access to the API has been temporarily blocked due to rate or spike arrest limits being reached
+              value:
+                status: 429
+                code: TOO_MANY_REQUESTS
+                message: Rate limit reached.
+    Generic503:
+      description: Service Unavailable
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 503
+                  code:
+                    enum:
+                      - UNAVAILABLE
+          examples:
+            GENERIC_503_UNAVAILABLE:
+              description: Service is not available. Temporary situation usually related to maintenance process in the server side
+              value:
+                status: 503
+                code: UNAVAILABLE
+                message: Service Unavailable.
+    Generic504:
+      description: Gateway Timeout
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorInfo'
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 504
+                  code:
+                    enum:
+                      - TIMEOUT
+          examples:
+            GENERIC_504_TIMEOUT:
+              description: API Server Timeout
+              value:
+                status: 504
+                code: TIMEOUT
+                message: Request timeout exceeded.
