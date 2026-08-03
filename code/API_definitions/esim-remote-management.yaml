@@ -251,14 +251,17 @@ components:
       properties:
         timestamp:
           type: string
+          format: date-time
           maxLength: 64
           description: Request timestamp in ISO 8601 format
         sequenceNum:
           type: string
+          pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
           maxLength: 64
           description: Sequence number for request tracking
         clientId:
           type: string
+          pattern: "^[a-zA-Z0-9_\\-]{1,128}$"
           maxLength: 128
           description: Client identifier
         data:
@@ -269,6 +272,7 @@ components:
       properties:
         taskId:
           type: string
+          pattern: "^[a-zA-Z0-9\\-]{1,64}$"
           maxLength: 64
           description: Task identifier returned from asynchronous operation
     BaseCmpRespProfileResultQueryResp:
@@ -277,14 +281,17 @@ components:
       properties:
         resultCode:
           type: string
+          pattern: "^B[0-9]{6}$"
           maxLength: 32
           description: 'B100000 - success, other - fail'
         resultDesc:
           type: string
+          pattern: "^[\\s\\S]{0,256}$"
           maxLength: 256
           description: Result description message
         sequenceNum:
           type: string
+          pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
           maxLength: 64
           description: Sequence number for response tracking
         data:
@@ -295,14 +302,17 @@ components:
       properties:
         taskId:
           type: string
+          pattern: "^[a-zA-Z0-9\\-]{1,64}$"
           maxLength: 64
           description: Task identifier
         imei:
           type: string
+          pattern: "^[0-9]{15}$"
           maxLength: 32
           description: Device IMEI number
         iccid:
           type: string
+          pattern: "^[0-9]{19,20}$"
           maxLength: 32
           description: Card ICCID number
         operResult:
@@ -314,10 +324,12 @@ components:
           enum: [0, 1, 2]
         eId:
           type: string
+          pattern: "^[A-Fa-f0-9]{32}$"
           maxLength: 64
           description: Device EID (eUICC Identifier)
         resultMsg:
           type: string
+          pattern: "^[\\s\\S]{0,512}$"
           maxLength: 512
           description: Detailed result message
     BaseCmpReqProfileOperReq:
@@ -350,14 +362,17 @@ components:
           properties:
             eId:
               type: string
+              pattern: "^[A-Fa-f0-9]{32}$"
               maxLength: 64
               description: Device EID
             imei:
               type: string
+              pattern: "^[0-9]{15}$"
               maxLength: 32
               description: Device IMEI number
             iccid:
               type: string
+              pattern: "^[0-9]{19,20}$"
               maxLength: 32
               description: Card ICCID number
             optType:
@@ -377,6 +392,7 @@ components:
           description: Maximum number of subscription events
         subscriptionExpireTime:
           type: string
+          format: date-time
           maxLength: 32
           description: Subscription expiration time in ISO 8601 format
     BaseCmpRespProfileOperResp:
@@ -405,14 +421,17 @@ components:
           properties:
             eId:
               type: string
+              pattern: "^[A-Fa-f0-9]{32}$"
               maxLength: 64
               description: Device EID
             imei:
               type: string
+              pattern: "^[0-9]{15}$"
               maxLength: 32
               description: Device IMEI number
             iccid:
               type: string
+              pattern: "^[0-9]{19,20}$"
               maxLength: 32
               description: Card ICCID number
             optType:
@@ -432,6 +451,7 @@ components:
           description: Maximum number of subscription events
         subscriptionExpireTime:
           type: string
+          format: date-time
           maxLength: 32
           description: Subscription expiration time in ISO 8601 format
     BaseCmpReqEidProfileListReq:
@@ -440,14 +460,17 @@ components:
       properties:
         timestamp:
           type: string
+          format: date-time
           maxLength: 64
           description: Request timestamp in ISO 8601 format
         sequenceNum:
           type: string
+          pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
           maxLength: 64
           description: Sequence number for request tracking
         clientId:
           type: string
+          pattern: "^[a-zA-Z0-9_\\-]{1,128}$"
           maxLength: 128
           description: Client identifier
         data:
@@ -458,6 +481,7 @@ components:
       properties:
         eId:
           type: string
+          pattern: "^[A-Fa-f0-9]{32}$"
           maxLength: 64
           description: Device EID to query profiles for
     BaseCmpRespEidProfileListResp:
@@ -466,14 +490,17 @@ components:
       properties:
         resultCode:
           type: string
+          pattern: "^B[0-9]{6}$"
           maxLength: 32
           description: 'B100000 - success, other - fail'
         resultDesc:
           type: string
+          pattern: "^[\\s\\S]{0,256}$"
           maxLength: 256
           description: Result description message
         sequenceNum:
           type: string
+          pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
           maxLength: 64
           description: Sequence number for response tracking
         data:
@@ -484,6 +511,7 @@ components:
       properties:
         imei:
           type: string
+          pattern: "^[0-9]{15}$"
           maxLength: 32
           description: Device IMEI number
         profiles:
@@ -494,6 +522,7 @@ components:
           description: List of profiles on the device
         eId:
           type: string
+          pattern: "^[A-Fa-f0-9]{32}$"
           maxLength: 64
           description: Device EID
     ProfileInfo:
@@ -502,6 +531,7 @@ components:
       properties:
         iccid:
           type: string
+          pattern: "^[0-9]{19,20}$"
           maxLength: 32
           description: Card ICCID number
         enableStatus:
@@ -540,14 +570,17 @@ components:
           properties:
             eId:
               type: string
+              pattern: "^[A-Fa-f0-9]{32}$"
               maxLength: 64
               description: Device EID
             imei:
               type: string
+              pattern: "^[0-9]{15}$"
               maxLength: 32
               description: Device IMEI number
             iccid:
               type: string
+              pattern: "^[0-9]{19,20}$"
               maxLength: 32
               description: Card ICCID number
             autoEnableType:
@@ -567,6 +600,7 @@ components:
           description: Maximum number of subscription events
         subscriptionExpireTime:
           type: string
+          format: date-time
           maxLength: 32
           description: Subscription expiration time in ISO 8601 format
     BaseCmpRespProfileDownloadResp:
@@ -595,14 +629,17 @@ components:
           properties:
             eId:
               type: string
+              pattern: "^[A-Fa-f0-9]{32}$"
               maxLength: 64
               description: Device EID
             imei:
               type: string
+              pattern: "^[0-9]{15}$"
               maxLength: 32
               description: Device IMEI number
             iccid:
               type: string
+              pattern: "^[0-9]{19,20}$"
               maxLength: 32
               description: Card ICCID number
             autoEnableType:
@@ -622,6 +659,7 @@ components:
           description: Maximum number of subscription events
         subscriptionExpireTime:
           type: string
+          format: date-time
           maxLength: 32
           description: Subscription expiration time in ISO 8601 format
     XCorrelator:
