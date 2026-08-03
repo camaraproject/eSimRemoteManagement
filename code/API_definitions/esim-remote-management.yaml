@@ -253,7 +253,7 @@ components:
           type: string
           format: date-time
           maxLength: 64
-          description: Request timestamp in ISO 8601 format
+          description: Request timestamp must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
         sequenceNum:
           type: string
           pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
@@ -340,6 +340,7 @@ components:
           $ref: '#/components/schemas/Protocol'
         sink:
           type: string
+          pattern: "^https?://[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=]{1,256}$"
           maxLength: 256
           description: Callback address (sink address for notification reception)
         types:
@@ -347,6 +348,7 @@ components:
           maxItems: 10
           items:
             type: string
+            pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
             maxLength: 64
             description: Event type identifier
           description: List of subscribed event types
@@ -394,7 +396,7 @@ components:
           type: string
           format: date-time
           maxLength: 32
-          description: Subscription expiration time in ISO 8601 format
+          description: Request timestamp must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
     BaseCmpRespProfileOperResp:
       type: object
       description: Response body for profile operation
@@ -407,6 +409,7 @@ components:
           description: Response code
         message:
           type: string
+          pattern: "^[\\s\\S]{0,256}$"
           maxLength: 256
           description: Response message
         config:
@@ -453,7 +456,7 @@ components:
           type: string
           format: date-time
           maxLength: 32
-          description: Subscription expiration time in ISO 8601 format
+          description: Request timestamp must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
     BaseCmpReqEidProfileListReq:
       type: object
       description: Request body for querying profile list
@@ -462,7 +465,7 @@ components:
           type: string
           format: date-time
           maxLength: 64
-          description: Request timestamp in ISO 8601 format
+          description: Request timestamp must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
         sequenceNum:
           type: string
           pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
@@ -548,6 +551,7 @@ components:
           $ref: '#/components/schemas/Protocol'
         sink:
           type: string
+          pattern: "^https?://[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=]{1,256}$"
           maxLength: 256
           description: Callback address (sink address for notification reception)
         types:
@@ -555,6 +559,7 @@ components:
           maxItems: 10
           items:
             type: string
+            pattern: "^[a-zA-Z0-9_\\-]{1,64}$"
             maxLength: 64
             description: Event type identifier
           description: List of subscribed event types
@@ -602,7 +607,7 @@ components:
           type: string
           format: date-time
           maxLength: 32
-          description: Subscription expiration time in ISO 8601 format
+          description: Request timestamp must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
     BaseCmpRespProfileDownloadResp:
       type: object
       description: Response body for profile download
@@ -615,6 +620,7 @@ components:
           description: Response code
         message:
           type: string
+          pattern: "^[\\s\\S]{0,256}$"
           maxLength: 256
           description: Response message
         config:
@@ -661,7 +667,7 @@ components:
           type: string
           format: date-time
           maxLength: 32
-          description: Subscription expiration time in ISO 8601 format
+          description: Request timestamp must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone.
     XCorrelator:
       type: string
       maxLength: 256
@@ -691,10 +697,12 @@ components:
           description: HTTP response status code
         code:
           type: string
+          pattern: "^[A-Z_]{1,96}$"
           maxLength: 96
           description: A human-readable code to describe the error
         message:
           type: string
+          pattern: "^[\\s\\S]{0,256}$"
           maxLength: 512
           description: A human-readable description of what the event represents
   responses:
