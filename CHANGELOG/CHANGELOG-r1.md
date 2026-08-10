@@ -73,7 +73,11 @@ The API definition(s) are based on
 
 ### Added
 
-* N/A
+This is the initial release, this version releases 4 apis related to eSim remote management:
+  * Query profile operation result:Query the result of an asynchronous profile operation (download, enable, disable, delete) using the task ID returned from a previous operation request. 
+  * Perform profile operation:Perform lifecycle operations on an eSIM profile including enable, disable, or delete. This is an asynchronous operation that returns a task ID for status tracking.
+  * Query downloaded profile list:Retrieve a list of all eSIM profiles currently downloaded on the device, including their status (enabled/disabled), ICCID, and other metadata.
+  * Download profile:Download and optionally install a new eSIM profile to the device. This is an asynchronous operation that returns a task ID for status tracking.
 
 ### Changed
 
