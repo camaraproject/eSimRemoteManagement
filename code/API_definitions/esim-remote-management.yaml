@@ -86,7 +86,7 @@ paths:
         - openId:
             - esim-remote-management:download
       tags:
-        - ESIM Remote Management
+        - eSIM Remote Management
       summary: Download profile
       description: |
         Download and optionally install a new eSIM profile to the device. This is an asynchronous operation that returns a task ID for status tracking.
@@ -146,7 +146,7 @@ paths:
         - openId:
             - esim-remote-management:query
       tags:
-        - ESIM Remote Management
+        - eSIM Remote Management
       summary: Query profile operation result
       description: |
         Query the result of an profile operation using the task ID returned from a operation request.
@@ -185,7 +185,7 @@ paths:
         - openId:
             - esim-remote-management:enable-profile
       tags:
-        - ESIM Remote Management
+        - eSIM Remote Management
       summary: Enable a profile
       description: |
         Enable an eSIM profile. This is an asynchronous operation that returns a task ID for status tracking.
@@ -246,7 +246,7 @@ paths:
         - openId:
             - esim-remote-management:disable-profile
       tags:
-        - ESIM Remote Management
+        - eSIM Remote Management
       summary: Disable a profile
       description: |
         Disable an eSIM profile. This is an asynchronous operation that returns a task ID for status tracking.
@@ -306,7 +306,7 @@ paths:
         - openId:
             - esim-remote-management:delete-profile
       tags:
-        - ESIM Remote Management
+        - eSIM Remote Management
       summary: Delete a profile
       description: |
         Delete an eSIM profile. This is an asynchronous operation that returns a task ID for status tracking.
@@ -391,7 +391,7 @@ components:
           $ref: '#/components/schemas/ProfileOpertaskid'
         device:
           $ref: '#/components/schemas/ProfileOperDevice'
-    BaseCmpRespProfileResultQueryResp:                               
+    BaseCmpRespProfileResultQueryResp:
       type: object
       description: Callback payload for profile operation completion notification
       properties:
@@ -471,10 +471,10 @@ components:
           maxLength: 32
           description: Device IMEI number
         iccid:
-           type: string
-           pattern: "^[0-9]{19,20}$"
-           maxLength: 32
-           description: Card ICCID number
+          type: string
+          pattern: "^[0-9]{19,20}$"
+          maxLength: 32
+          description: Card ICCID number
     ProfileOperStatus:
       description: |
         Status of the profile operation
@@ -529,7 +529,7 @@ components:
           $ref: "#/components/schemas/ProfileOperStatus"
         statusInfo:
           $ref: "#/components/schemas/ProfileOperStatusInfo"
-    ProfileOperationCallback:                               
+    ProfileOperationCallback:
       type: object
       description: Callback payload for profile operation completion notification
       properties:
