@@ -86,7 +86,7 @@ paths:
         - openId:
             - esim-remote-management:download
       tags:
-        - eSIM Remote Management
+        - ESIM Remote Management
       summary: Download profile
       description: |
         Download and optionally install a new eSIM profile to the device. This is an asynchronous operation that returns a task ID for status tracking.
@@ -119,7 +119,7 @@ paths:
           $ref: '#/components/responses/Generic404'
         '422':
           $ref: "#/components/responses/Generic422"
-      callbacks:                                             
+      callbacks:
         profile-download-completed:
           "{$request.body/sink}":
             post:
@@ -146,7 +146,7 @@ paths:
         - openId:
             - esim-remote-management:query
       tags:
-        - eSIM Remote Management
+        - ESIM Remote Management
       summary: Query profile operation result
       description: |
         Query the result of an profile operation using the task ID returned from a operation request.
@@ -185,7 +185,7 @@ paths:
         - openId:
             - esim-remote-management:enable-profile
       tags:
-        - eSIM Remote Management
+        - ESIM Remote Management
       summary: Enable a profile
       description: |
         Enable an eSIM profile. This is an asynchronous operation that returns a task ID for status tracking.
@@ -218,7 +218,7 @@ paths:
           $ref: '#/components/responses/Generic404'
         '422':
           $ref: "#/components/responses/Generic422"
-      callbacks:                                             
+      callbacks:
         profile-operation-completed:
           "{$request.body/sink}":
             post:
@@ -246,7 +246,7 @@ paths:
         - openId:
             - esim-remote-management:disable-profile
       tags:
-        - eSIM Remote Management
+        - ESIM Remote Management
       summary: Disable a profile
       description: |
         Disable an eSIM profile. This is an asynchronous operation that returns a task ID for status tracking.
@@ -279,7 +279,7 @@ paths:
           $ref: '#/components/responses/Generic404'
         '422':
           $ref: "#/components/responses/Generic422"
-      callbacks:                                             
+      callbacks:
         profile-operation-completed:
           "{$request.body/sink}":
             post:
@@ -306,7 +306,7 @@ paths:
         - openId:
             - esim-remote-management:delete-profile
       tags:
-        - eSIM Remote Management
+        - ESIM Remote Management
       summary: Delete a profile
       description: |
         Delete an eSIM profile. This is an asynchronous operation that returns a task ID for status tracking.
@@ -339,7 +339,7 @@ paths:
           $ref: '#/components/responses/Generic404'
         '422':
           $ref: "#/components/responses/Generic422"
-      callbacks:                                    
+      callbacks:
         profile-operation-completed:
           "{$request.body/sink}":
             post:
@@ -565,8 +565,6 @@ components:
       pattern: ^[a-zA-Z0-9-_:;.\/<>{}]{0,256}$
       maxLength: 256
       example: "b4333c46-49c0-4f62-80d7-f0ef930f1c46"
-    ErrorInfo:
-      $ref: "../common/CAMARA_common.yaml#/components/schemas/ErrorInfo"
   responses:
     Generic400:
       description: Bad Request
