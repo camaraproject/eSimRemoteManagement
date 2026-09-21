@@ -1,0 +1,13 @@
+repository:
+  repository_name: eSimRemoteManagement
+  release_tag: r1.1
+  release_type: pre-release-alpha
+  release_date: null
+  src_commit_sha: 5bf10e2cb0195740d1d3d9d174c40cfdcaf66d03
+apis:
+- api_name: esim-remote-management
+  api_version: 0.1.0-alpha.1
+  api_title: Esim Remote Management
+dependencies:
+  commonalities_release: r4.4 (0.9.0)
+  identity_consent_management_release: r4.2 (0.5.0)
