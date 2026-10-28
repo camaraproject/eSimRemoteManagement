@@ -78,7 +78,15 @@ The API definition(s) are based on
 
 ### Added
 
-* N/A
+* Initial version of the `esim-remote-management` API definition and documentation, covering the remote lifecycle management of eSIM profiles on a device's eUICC. The alpha version provides five operations:
+  - `POST /download` - download and optionally install a new eSIM profile on the device.
+  - `POST /enable-profile` - enable a downloaded eSIM profile.
+  - `POST /disable-profile` - disable an eSIM profile without deleting it from the device.
+  - `POST /delete-profile` - delete an eSIM profile from the device.
+  - `POST /result/query` - query the outcome of an asynchronous profile operation using the task ID returned by the originating request.
+* The four asynchronous operations (`/download`, `/enable-profile`, `/disable-profile`, `/delete-profile`) return a task ID for status tracking and can optionally notify the API consumer through the `sink`/`sinkCredential` mechanism, using `application/cloudevents+json` callbacks as defined by Commonalities.
+* Device identification from the access token: the optional `device` object is required for two-legged access and must be omitted for three-legged access, with `422 MISSING_IDENTIFIER` / `422 UNNECESSARY_IDENTIFIER` error handling.
+* Error responses aligned with Commonalities 0.9.0 (`400`, `401`, `403`, `404`, `422`, `429`), including request body strictness with `400 INVALID_ARGUMENT` for undeclared properties.
 
 ### Changed
 
