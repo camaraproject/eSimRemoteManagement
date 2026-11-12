@@ -12,13 +12,18 @@ info:
 
     The API provides the following functionality:
       - Download profiles: Download and optionally install a new eSIM profile to the device. This is an asynchronous operation that returns a task ID for status tracking.
-      - Query the downloaded profiles list: Retrieve a list of all eSIM profiles currently downloaded on the device, including their status (enabled/disabled/deletion), ICCID, and other metadata.
       - Profile Lifecycle Management: Execute precise control over installed profiles:
         - Enable: Switch a downloaded profile to the active state for live connectivity.
         - Disable: Temporarily disable a profile without deleting it from the device.
         - Deletion: Permanently remove an unused or obsolete profile from the device's eSIM chip, freeing up memory.
-      - Query the operation result: Query the result of an profile operation using the task ID returned from a operation request.
+      - Query the operation result: Query the result of a profile operation using the task ID returned from an operation request.
 
+    The following scopes are required:
+      - esim-remote-management:download-profile - Download and install a new profile
+      - esim-remote-management:enable-profile - Enable a downloaded profile
+      - esim-remote-management:disable-profile - Disable an enabled profile
+      - esim-remote-management:delete-profile - Delete a profile from the device
+      - esim-remote-management:query-result - Query the result of an asynchronous operation
 
     <!-- CAMARA:MANDATORY:authorization-and-authentication:BEGIN -->
 
@@ -87,7 +92,7 @@ paths:
     post:
       security:
         - openId:
-            - esim-remote-management:download
+            - esim-remote-management:download-profile
       tags:
         - Esim Remote Management
       summary: Download profile
@@ -104,7 +109,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseCmpReqProfileDownloadReq'
+              $ref: '#/components/schemas/ProfileOperationRequest'
         required: true
       responses:
         "201":
@@ -112,20 +117,29 @@ paths:
           headers:
             x-correlator:
               $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
+            Location:
+              description: |
+                URL of the task resource for retrieving the result of this operation. The URL follows the pattern `/result/query?taskId={taskId}`.
+              schema:
+                type: string
+                format: uri-reference
+                maxLength: 2048
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseCmpRespProfileDownloadResp'
+                $ref: '#/components/schemas/ProfileOperationResult'
         '400':
-          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
         '401':
           $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
         '403':
-          $ref: "#/components/responses/PermissionDenied403"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
         '404':
-          $ref: "#/components/responses/NotFound404"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/IdentifierNotFound404"
         '422':
-          $ref: "#/components/responses/ProfileOperationUnprocessableEntity422"
+          $ref: "#/components/responses/UnprocessableEntity422"
+        '429':
+          $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
       callbacks:
         profile-download-completed:
           "{$request.body#/sink}":
@@ -144,15 +158,15 @@ paths:
                     x-correlator:
                       $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
                 "400":
-                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
                 "401":
                   $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
                 "403":
-                  $ref: "#/components/responses/PermissionDenied403"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
                 "410":
                   $ref: "../common/CAMARA_event_common.yaml#/components/responses/SinkGone410"
                 "429":
-                  $ref: "#/components/responses/TooManyRequests429"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
               security:
                 - {}
                 - notificationsBearerAuth: []
@@ -160,7 +174,7 @@ paths:
     post:
       security:
         - openId:
-            - esim-remote-management:query
+            - esim-remote-management:query-result
       tags:
         - Esim Remote Management
       summary: Query profile operation result
@@ -173,7 +187,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseCmpReqProfileResultQueryReq'
+              $ref: '#/components/schemas/ProfileResultQueryRequest'
         required: true
       responses:
         "200":
@@ -184,17 +198,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseCmpRespProfileResultQueryResp'
+                $ref: '#/components/schemas/ProfileOperationResult'
         '400':
-          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
         '401':
           $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
         '403':
-          $ref: "#/components/responses/PermissionDenied403"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
         '404':
-          $ref: "#/components/responses/NotFound404"
-        '422':
-          $ref: "../common/CAMARA_common.yaml#/components/responses/DeviceIdentifier422"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/NotFound404"
+        '429':
+          $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
   /enable-profile:
     post:
       security:
@@ -216,7 +230,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseCmpReqProfileOperReq'
+              $ref: '#/components/schemas/ProfileOperationRequest'
         required: true
       responses:
         "201":
@@ -224,20 +238,29 @@ paths:
           headers:
             x-correlator:
               $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
+            Location:
+              description: |
+                URL of the task resource for retrieving the result of this operation. The URL follows the pattern `/result/query?taskId={taskId}`.
+              schema:
+                type: string
+                format: uri-reference
+                maxLength: 2048
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseCmpRespProfileOperResp'
+                $ref: '#/components/schemas/ProfileOperationResult'
         '400':
-          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
         '401':
           $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
         '403':
-          $ref: "#/components/responses/PermissionDenied403"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
         '404':
-          $ref: "#/components/responses/NotFound404"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/IdentifierNotFound404"
         '422':
-          $ref: "#/components/responses/ProfileOperationUnprocessableEntity422"
+          $ref: "#/components/responses/UnprocessableEntity422"
+        '429':
+          $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
       callbacks:
         profile-operation-completed:
           "{$request.body#/sink}":
@@ -256,15 +279,15 @@ paths:
                     x-correlator:
                       $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
                 "400":
-                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
                 "401":
                   $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
                 "403":
-                  $ref: "#/components/responses/PermissionDenied403"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
                 "410":
                   $ref: "../common/CAMARA_event_common.yaml#/components/responses/SinkGone410"
                 "429":
-                  $ref: "#/components/responses/TooManyRequests429"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
               security:
                 - {}
                 - notificationsBearerAuth: []
@@ -290,7 +313,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseCmpReqProfileOperReq'
+              $ref: '#/components/schemas/ProfileOperationRequest'
         required: true
       responses:
         "201":
@@ -298,20 +321,29 @@ paths:
           headers:
             x-correlator:
               $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
+            Location:
+              description: |
+                URL of the task resource for retrieving the result of this operation. The URL follows the pattern `/result/query?taskId={taskId}`.
+              schema:
+                type: string
+                format: uri-reference
+                maxLength: 2048
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseCmpRespProfileOperResp'
+                $ref: '#/components/schemas/ProfileOperationResult'
         '400':
-          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
         '401':
           $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
         '403':
-          $ref: "#/components/responses/PermissionDenied403"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
         '404':
-          $ref: "#/components/responses/NotFound404"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/IdentifierNotFound404"
         '422':
-          $ref: "#/components/responses/ProfileOperationUnprocessableEntity422"
+          $ref: "#/components/responses/UnprocessableEntity422"
+        '429':
+          $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
       callbacks:
         profile-operation-completed:
           "{$request.body#/sink}":
@@ -330,15 +362,15 @@ paths:
                     x-correlator:
                       $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
                 "400":
-                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
                 "401":
                   $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
                 "403":
-                  $ref: "#/components/responses/PermissionDenied403"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
                 "410":
                   $ref: "../common/CAMARA_event_common.yaml#/components/responses/SinkGone410"
                 "429":
-                  $ref: "#/components/responses/TooManyRequests429"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
               security:
                 - {}
                 - notificationsBearerAuth: []
@@ -363,7 +395,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseCmpReqProfileOperReq'
+              $ref: '#/components/schemas/ProfileOperationRequest'
         required: true
       responses:
         "201":
@@ -371,20 +403,29 @@ paths:
           headers:
             x-correlator:
               $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
+            Location:
+              description: |
+                URL of the task resource for retrieving the result of this operation. The URL follows the pattern `/result/query?taskId={taskId}`.
+              schema:
+                type: string
+                format: uri-reference
+                maxLength: 2048
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseCmpRespProfileOperResp'
+                $ref: '#/components/schemas/ProfileOperationResult'
         '400':
-          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
         '401':
           $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
         '403':
-          $ref: "#/components/responses/PermissionDenied403"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
         '404':
-          $ref: "#/components/responses/NotFound404"
+          $ref: "../common/CAMARA_common.yaml#/components/responses/IdentifierNotFound404"
         '422':
-          $ref: "#/components/responses/ProfileOperationUnprocessableEntity422"
+          $ref: "#/components/responses/UnprocessableEntity422"
+        '429':
+          $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
       callbacks:
         profile-operation-completed:
           "{$request.body#/sink}":
@@ -403,15 +444,15 @@ paths:
                     x-correlator:
                       $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
                 "400":
-                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequestWithRange400"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/BadRequest400"
                 "401":
                   $ref: "../common/CAMARA_common.yaml#/components/responses/Unauthenticated401"
                 "403":
-                  $ref: "#/components/responses/PermissionDenied403"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/PermissionDenied403"
                 "410":
                   $ref: "../common/CAMARA_event_common.yaml#/components/responses/SinkGone410"
                 "429":
-                  $ref: "#/components/responses/TooManyRequests429"
+                  $ref: "../common/CAMARA_common.yaml#/components/responses/TooManyRequests429"
               security:
                 - {}
                 - notificationsBearerAuth: []
@@ -424,49 +465,9 @@ components:
       $ref: "../common/CAMARA_event_common.yaml#/components/securitySchemes/notificationsBearerAuth"
 
   schemas:
-    BaseCmpReqProfileResultQueryReq:
+    ProfileOperationRequest:
       type: object
-      description: Request body for querying profile operation result
-      required:
-        - taskId
-      properties:
-        taskId:
-          $ref: '#/components/schemas/ProfileOpertaskid'
-        device:
-          $ref: '#/components/schemas/ProfileOperDevice'
-    BaseCmpRespProfileResultQueryResp:
-      type: object
-      description: Callback payload for profile operation completion notification
-      properties:
-        taskId:
-          type: string
-          pattern: "^[a-zA-Z0-9\\-]{1,64}$"
-          maxLength: 64
-          description: Task identifier
-        eId:
-          type: string
-          pattern: "^[a-zA-Z0-9\\-]{1,64}$"
-          maxLength: 64
-          description: Device EID (eUICC Identifier)
-        imei:
-          type: string
-          pattern: "^[0-9]{15}$"
-          maxLength: 32
-          description: Device IMEI number
-        iccid:
-          type: string
-          pattern: "^[0-9]{19,20}$"
-          maxLength: 32
-          description: Card ICCID number
-        operResult:
-          type: string
-          description: Operation profile result
-          enum:
-            - SUCCESS
-            - ERROR
-    BaseCmpReqProfileOperReq:
-      type: object
-      description: Request body for profile operation
+      description: Request body for a profile operation (download, enable, disable or delete)
       required:
         - device
       properties:
@@ -487,47 +488,61 @@ components:
             - $ref: "../common/CAMARA_event_common.yaml#/components/schemas/Sink"
         sinkCredential:
           $ref: "../common/CAMARA_event_common.yaml#/components/schemas/SinkCredential"
-    BaseCmpRespProfileOperResp:
+    ProfileResultQueryRequest:
       type: object
-      description: Response body for profile operation
+      description: Request body for querying the result of a profile operation
+      required:
+        - taskId
       properties:
         taskId:
-          $ref: '#/components/schemas/ProfileOpertaskid'
+          $ref: '#/components/schemas/ProfileOperationTaskId'
+    ProfileOperationResult:
+      type: object
+      description: Result of an asynchronous profile operation
+      required:
+        - taskId
+        - status
+      properties:
+        taskId:
+          $ref: '#/components/schemas/ProfileOperationTaskId'
+        status:
+          $ref: '#/components/schemas/ProfileOperStatus'
+        statusInfo:
+          $ref: '#/components/schemas/ProfileOperStatusInfo'
         device:
           $ref: '#/components/schemas/ProfileOperDevice'
-        status:
-          $ref: "#/components/schemas/ProfileOperStatus"
-        statusInfo:
-          $ref: "#/components/schemas/ProfileOperStatusInfo"
-    ProfileOpertaskid:
+    ProfileOperationTaskId:
       type: string
-      pattern: "^[a-zA-Z0-9\\-]{1,64}$"
-      maxLength: 64
-      description: The task number returned after the operation is completed
+      pattern: "^[a-zA-Z0-9-]{1,64}$"
+      description: Identifier of the asynchronous task returned by the API Provider
+    Eid:
+      type: string
+      pattern: "^[0-9]{32}$"
+      description: eUICC Identifier (EID), 32 decimal digits as defined in GSMA SGP.02
+    Imei:
+      type: string
+      pattern: "^[0-9]{15}$"
+      description: International Mobile Equipment Identity (IMEI) of the device, 15 decimal digits
+    Iccid:
+      type: string
+      pattern: "^[0-9]{19,20}$"
+      description: Integrated Circuit Card Identifier (ICCID) of the profile, 19 or 20 decimal digits
     ProfileOperDevice:
       type: object
-      description: Configuration for profile operation response
+      minProperties: 1
+      description: Device identifiers of the target device. At least one identifier must be provided.
       properties:
         eId:
-          type: string
-          pattern: "^[a-zA-Z0-9\\-]{1,64}$"
-          maxLength: 64
-          description: Device EID
+          $ref: '#/components/schemas/Eid'
         imei:
-          type: string
-          pattern: "^[0-9]{15}$"
-          maxLength: 32
-          description: Device IMEI number
+          $ref: '#/components/schemas/Imei'
         iccid:
-          type: string
-          pattern: "^[0-9]{19,20}$"
-          maxLength: 32
-          description: Card ICCID number
+          $ref: '#/components/schemas/Iccid'
     ProfileOperStatus:
       description: |
         Status of the profile operation
-        * `SUCCESS` - The eSIM configuration file was successfully enabled
-        * `ERROR` - Failed to enable the eSIM configuration file
+        * `SUCCESS` - The operation completed successfully
+        * `ERROR` - The operation failed
       type: string
       enum:
         - SUCCESS
@@ -535,7 +550,7 @@ components:
     ProfileOperStatusInfo:
       description: |
         Additional information about the profile operation status
-        * `OPERATION_COMPLETED` - The assignment operation has been completed
+        * `OPERATION_COMPLETED` - The operation has been completed
         * `ICCID_NOT_FOUND` - The specified iccid does not exist
         * `OPERATION_UNKNOWN_ERROR` - The operation failed due to an unknown error
         * `OPERATION_PENDING` - The operation request is pending for validation and verification
@@ -545,41 +560,7 @@ components:
         - ICCID_NOT_FOUND
         - OPERATION_UNKNOWN_ERROR
         - OPERATION_PENDING
-    BaseCmpReqProfileDownloadReq:
-      type: object
-      description: Request body for profile operation
-      required:
-        - device
-      properties:
-        device:
-          $ref: '#/components/schemas/ProfileOperDevice'
-        sink:
-          description: |
-            The URL where notifications about the outcome of this operation are
-            delivered, using the CloudEvents format over HTTP.
 
-            Providing `sink` requests event-notification delivery for this
-            operation. If the API provider does not support notification
-            delivery, the request MUST be rejected with
-            `422 EVENT_NOTIFICATIONS_NOT_SUPPORTED` and the operation MUST NOT
-            be started. The API consumer can then retry without `sink` and
-            retrieve the outcome via `/result/query` instead.
-          allOf:
-            - $ref: "../common/CAMARA_event_common.yaml#/components/schemas/Sink"
-        sinkCredential:
-          $ref: "../common/CAMARA_event_common.yaml#/components/schemas/SinkCredential"
-    BaseCmpRespProfileDownloadResp:
-      type: object
-      description: Response body for profile operation
-      properties:
-        taskId:
-          $ref: '#/components/schemas/ProfileOpertaskid'
-        device:
-          $ref: '#/components/schemas/ProfileOperDevice'
-        status:
-          $ref: "#/components/schemas/ProfileOperStatus"
-        statusInfo:
-          $ref: "#/components/schemas/ProfileOperStatusInfo"
     ProfileOperationCallback:
       description: Callback payload for profile operation completion notification
       allOf:
@@ -591,25 +572,13 @@ components:
               description: Event details
               properties:
                 taskId:
-                  type: string
-                  pattern: "^[a-zA-Z0-9\\-]{1,64}$"
-                  maxLength: 64
-                  description: Task identifier
+                  $ref: '#/components/schemas/ProfileOperationTaskId'
                 eId:
-                  type: string
-                  pattern: "^[a-zA-Z0-9\\-]{1,64}$"
-                  maxLength: 64
-                  description: Device EID (eUICC Identifier)
+                  $ref: '#/components/schemas/Eid'
                 imei:
-                  type: string
-                  pattern: "^[0-9]{15}$"
-                  maxLength: 32
-                  description: Device IMEI number
+                  $ref: '#/components/schemas/Imei'
                 iccid:
-                  type: string
-                  pattern: "^[0-9]{19,20}$"
-                  maxLength: 32
-                  description: Card ICCID number
+                  $ref: '#/components/schemas/Iccid'
                 operResult:
                   type: string
                   description: Operation profile result
@@ -647,77 +616,7 @@ components:
           org.camaraproject.esim-remote-management.v0.profile-download-completed: "#/components/schemas/ProfileOperationCallback"
           org.camaraproject.esim-remote-management.v0.profile-operation-completed: "#/components/schemas/ProfileOperationCallback"
   responses:
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # API-specific error responses (locally defined)
-    #
-    # Following the Commonalities 0.9.0 catalogue model, responses that match a
-    # referenceable catalogue entry are referenced directly from
-    # `CAMARA_common.yaml` / `CAMARA_event_common.yaml` (see `paths` above).
-    # Only the code combinations the catalogue does not cover are defined
-    # locally here — combining `ErrorInfo` with a local restriction of `status`
-    # and `code`, and referencing the shared example ingredients so that the
-    # error wording stays consistent across CAMARA APIs.
-    # ─────────────────────────────────────────────────────────────────────────
-
-    PermissionDenied403:
-      description: Forbidden
-      headers:
-        x-correlator:
-          $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "../common/CAMARA_common.yaml#/components/schemas/ErrorInfo"
-              - type: object
-                properties:
-                  status:
-                    enum:
-                      - 403
-                  code:
-                    enum:
-                      - PERMISSION_DENIED
-                      - INVALID_TOKEN_CONTEXT
-          examples:
-            GENERIC_403_PERMISSION_DENIED:
-              $ref: "../common/CAMARA_common.yaml#/components/examples/GENERIC_403_PERMISSION_DENIED"
-            GENERIC_403_INVALID_TOKEN_CONTEXT:
-              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
-              value:
-                status: 403
-                code: INVALID_TOKEN_CONTEXT
-                message: Request body is not consistent with access token.
-
-    NotFound404:
-      description: Not found
-      headers:
-        x-correlator:
-          $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "../common/CAMARA_common.yaml#/components/schemas/ErrorInfo"
-              - type: object
-                properties:
-                  status:
-                    enum:
-                      - 404
-                  code:
-                    enum:
-                      - NOT_FOUND
-                      - IDENTIFIER_NOT_FOUND
-          examples:
-            GENERIC_404_NOT_FOUND:
-              $ref: "../common/CAMARA_common.yaml#/components/examples/GENERIC_404_NOT_FOUND"
-            GENERIC_404_IDENTIFIER_NOT_FOUND:
-              $ref: "../common/CAMARA_common.yaml#/components/examples/GENERIC_404_IDENTIFIER_NOT_FOUND"
-
-    # 422 for the asynchronous operations that accept `sink`: the identifier
-    # codes plus the Commonalities 0.9.0 implicit-subscription code
-    # `EVENT_NOTIFICATIONS_NOT_SUPPORTED` (see the `sink` property description).
-    ProfileOperationUnprocessableEntity422:
+    UnprocessableEntity422:
       description: Unprocessable Content
       headers:
         x-correlator:
@@ -750,30 +649,3 @@ components:
               $ref: "../common/CAMARA_common.yaml#/components/examples/GENERIC_422_UNNECESSARY_IDENTIFIER_DEVICE"
             GENERIC_422_EVENT_NOTIFICATIONS_NOT_SUPPORTED:
               $ref: "../common/CAMARA_event_common.yaml#/components/examples/GENERIC_422_EVENT_NOTIFICATIONS_NOT_SUPPORTED"
-
-    # 429 — extends the catalogue `TooManyRequests429` with the API-specific
-    # business quota code `QUOTA_EXCEEDED`.
-    TooManyRequests429:
-      description: Quota Exceed or Too Many Requests
-      headers:
-        x-correlator:
-          $ref: "../common/CAMARA_common.yaml#/components/headers/x-correlator"
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "../common/CAMARA_common.yaml#/components/schemas/ErrorInfo"
-              - type: object
-                properties:
-                  status:
-                    enum:
-                      - 429
-                  code:
-                    enum:
-                      - QUOTA_EXCEEDED
-                      - TOO_MANY_REQUESTS
-          examples:
-            GENERIC_429_QUOTA_EXCEEDED:
-              $ref: "../common/CAMARA_common.yaml#/components/examples/GENERIC_429_QUOTA_EXCEEDED"
-            GENERIC_429_TOO_MANY_REQUESTS:
-              $ref: "../common/CAMARA_common.yaml#/components/examples/GENERIC_429_TOO_MANY_REQUESTS"
