@@ -2,6 +2,7 @@ Feature: CAMARA eSIM Remote Management API vwip - Operation profileDownload
 
     # Input to be provided by the implementation to the tester
     #
+    #
     # Implementation indications:
     #
     # References to OAS spec schemas refer to schemas specifies in esim-remote-management.yaml, version vwip
@@ -13,6 +14,13 @@ Feature: CAMARA eSIM Remote Management API vwip - Operation profileDownload
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
     And the request body is set based on the OAS schema at "/components/schemas/BaseCmpReqProfileDownloadReq"
+    And the request body property "$.protocol" is set to "HTTP"
+    And the request body property "$.sink" is set to a valid callback URI
+    And the request body property "$.types" is set to a list of subscribed event types
+    And the request body property "$.config.subscriptionDetail.eId" is set to a valid EID
+    And the request body property "$.config.subscriptionDetail.imei" is set to a valid IMEI
+    And the request body property "$.config.subscriptionDetail.iccid" is set to a valid ICCID
+    And the request body property "$.config.subscriptionDetail.autoEnableType" is set to a valid download option (1 Download and enable)
 
 # Success scenarios
 
