@@ -1,4 +1,4 @@
-Feature: CAMARA eSIM Remote Management API, vwip - Operation profileDisable
+Feature: CAMARA eSIM Remote Management API, v0.1.0-alpha.1 - Operation profileDisable
 
   # Input to be provided by the implementation to the tester
   #
@@ -22,7 +22,7 @@ Feature: CAMARA eSIM Remote Management API, vwip - Operation profileDisable
 
   Background: Common profileDisable setup
     Given an environment at "apiRoot"
-    And the resource "/esim-remote-management/vwip/disable-profile"
+    And the resource "/esim-remote-management/v0.1alpha1/disable-profile"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
