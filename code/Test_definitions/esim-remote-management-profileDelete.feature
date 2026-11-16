@@ -1,4 +1,4 @@
-Feature: CAMARA eSIM Remote Management API, vwip - Operation profileDelete
+Feature: CAMARA eSIM Remote Management API, v0.1.0-alpha.1 - Operation profileDelete
 
   # Input to be provided by the implementation to the tester
   #
@@ -22,7 +22,7 @@ Feature: CAMARA eSIM Remote Management API, vwip - Operation profileDelete
 
   Background: Common profileDelete setup
     Given an environment at "apiRoot"
-    And the resource "/esim-remote-management/vwip/delete-profile"
+    And the resource "/esim-remote-management/v0.1alpha1/delete-profile"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
