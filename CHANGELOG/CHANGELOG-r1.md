@@ -84,7 +84,16 @@ The API definition(s) are based on
 
 ### Added
 
-* N/A
+* Initial version of the `esim-remote-management` API definition, covering the remote lifecycle management of eSIM profiles on a device's eUICC. The API provides five operations:
+  - `POST /download` - download a new eSIM profile to the eUICC. The profile is left in the `downloaded` state and is activated by a separate enable operation.
+  - `POST /enable-profile` - enable a downloaded profile.
+  - `POST /disable-profile` - disable an enabled profile without deleting it from the device.
+  - `POST /delete-profile` - delete a profile from the device.
+  - `POST /result/query` - query the outcome of an asynchronous profile operation using the task ID returned by the originating request.
+* The profile lifecycle is documented as a state machine: `downloaded --enable--> enabled --disable--> disabled`, and `enabled / disabled --delete--> deleted`.
+* Every profile operation targets one profile on one eUICC, and both are stated in the request body: `device.eId` identifies the eUICC and `device.iccid` the profile on it. Both are required and not interchangeable; `device.imei` is optional additional information. A request missing either identifier is rejected with `400 INVALID_ARGUMENT`.
+* The four asynchronous operations (`/download`, `/enable-profile`, `/disable-profile`, `/delete-profile`) return a task ID for status tracking and can optionally notify the API consumer through the `sink`/`sinkCredential` mechanism, using `application/cloudevents+json` callbacks as defined by Commonalities. Where notification delivery is not supported by the API provider, a request carrying `sink` is rejected with `422 EVENT_NOTIFICATIONS_NOT_SUPPORTED` and the operation is not started.
+* Error responses aligned with Commonalities 0.9.0 (`400`, `401`, `403`, `404`, `422`, `429`), including request body strictness with `400 INVALID_ARGUMENT` for undeclared properties at any nesting level. The documented `422` codes are `SERVICE_NOT_APPLICABLE`, `UNSUPPORTED_IDENTIFIER` and `EVENT_NOTIFICATIONS_NOT_SUPPORTED`.
 
 ### Changed
 
