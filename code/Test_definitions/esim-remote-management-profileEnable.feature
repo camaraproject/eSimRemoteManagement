@@ -1,4 +1,4 @@
-Feature: CAMARA eSIM Remote Management API, vwip - Operation profileEnable
+Feature: CAMARA eSIM Remote Management API, v0.1.0-alpha.1 - Operation profileEnable
 
   # Input to be provided by the implementation to the tester
   #
@@ -21,7 +21,7 @@ Feature: CAMARA eSIM Remote Management API, vwip - Operation profileEnable
 
   Background: Common profileEnable setup
     Given an environment at "apiRoot"
-    And the resource "/esim-remote-management/vwip/enable-profile"
+    And the resource "/esim-remote-management/v0.1alpha1/enable-profile"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
