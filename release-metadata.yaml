@@ -2,7 +2,7 @@ repository:
   repository_name: eSimRemoteManagement
   release_tag: r1.1
   release_type: pre-release-alpha
-  release_date: null
+  release_date: '2026-11-19T01:24:33Z'
   src_commit_sha: ea9f2b514f0c50d40cda7f61849f128bf55e29c5
 apis:
 - api_name: esim-remote-management
